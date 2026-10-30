@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f7ff" />
+  <title>九九おぼえMATH - パワーアップ版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    @keyframes bounce-custom {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    @keyframes shake-custom {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-correct {
+      animation: bounce-custom 0.3s ease;
+      background-color: #22c55e !important;
+      border-color: #22c55e !important;
+      color: white !important;
+    }
+    .animate-incorrect {
+      animation: shake-custom 0.3s ease;
+      background-color: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: white !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col items-center p-4">
+
+  <header class="mb-4 text-center relative w-full max-w-2xl">
+    <a href="index.html" class="absolute left-0 top-0 text-xs font-bold text-slate-500 bg-white px-3 py-2 rounded-xl shadow">🏠 トップ</a>
+    <h1 class="text-3xl font-extrabold text-indigo-600 tracking-wide drop-shadow-sm">九九答えMATH</h1>
+    <p class="text-xs text-slate-500 font-medium mt-1">たのしく九九をマスターしよう！</p>
+  </header>
+
+  <main class="w-full max-w-2xl flex flex-col gap-6">
+    <!-- 設定パネル -->
+    <section id="configPanel" class="bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col gap-6 transition-all duration-300">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-extrabold text-slate-700">どの九九にちょうせんする？</h2>
+      </div>
+
+      <!-- レベル選択 -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-slate-600">① レベルをえらんでね</label>
+        <div id="levelCards" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button type="button" data-level="beginner" class="level-card p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold flex flex-col items-center justify-center transition cursor-pointer shadow-sm text-base gap-1">
+            <span>レベル 1</span>
+            <span class="text-xs font-normal text-emerald-700">（ドットかずえ）</span>
+          </button>
+          <button type="button" data-level="intermediate" class="level-card p-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold flex flex-col items-center justify-center transition cursor-pointer hover:border-slate-300 text-base gap-1">
+            <span>レベル 2</span>
+            <span class="text-xs font-normal text-slate-500">（4択クイズ）</span>
+          </button>
+          <button type="button" data-level="advanced" class="level-card p-4 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold flex flex-col items-center justify-center transition cursor-pointer hover:border-slate-300 text-base gap-1">
+            <span>レベル 3</span>
+            <span class="text-xs font-normal text-slate-500">（キーボード入力）</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- だん選択 -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-slate-600">② だんをえらんでね</label>
+        <div id="danCards" class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <button type="button" data-dan="1" class="dan-card p-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-sm flex items-center justify-center transition cursor-pointer shadow-sm">1の段</button>
+          <button type="button" data-dan="2" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">2の段</button>
+          <button type="button" data-dan="3" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">3の段</button>
+          <button type="button" data-dan="4" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">4の段</button>
+          <button type="button" data-dan="5" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">5の段</button>
+          <button type="button" data-dan="6" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">6の段</button>
+          <button type="button" data-dan="7" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">7の段</button>
+          <button type="button" data-dan="8" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">8の段</button>
+          <button type="button" data-dan="9" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">9の段</button>
+          <button type="button" data-dan="2-5" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">２〜５の段</button>
+          <button type="button" data-dan="6-9" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">６〜９の段</button>
+          <button type="button" data-dan="4,7" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300">４と７の段</button>
+          <button type="button" data-dan="all" class="dan-card p-2.5 rounded-xl border-2 border-slate-200 bg-white text-indigo-600 font-bold text-sm flex items-center justify-center transition cursor-pointer hover:border-slate-300 col-span-3 sm:col-span-4">ぜんぶ</button>
+        </div>
+      </div>
+
+      <!-- Hidden select elements for internal script state compatibility -->
+      <select id="level" class="hidden">
+        <option value="beginner" selected>beginner</option>
+        <option value="intermediate">intermediate</option>
+        <option value="advanced">advanced</option>
+      </select>
+      <select id="mode" class="hidden">
+        <option value="single" selected>single</option>
+        <option value="all">all</option>
+        <option value="2-5">2-5</option>
+        <option value="6-9">6-9</option>
+        <option value="4,7">4,7</option>
+      </select>
+      <input type="number" id="singleDan" value="1" class="hidden" />
+
+      <button id="startBtn" type="button" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-indigo-200 transition text-lg cursor-pointer">
+        🚀 はじめる
+      </button>
+    </section>
+
+    <!-- プレイ中ヘッダー（スコア＆残り時間） -->
+    <section id="gameHeader" style="display: none;" class="bg-white rounded-2xl p-4 shadow-md border border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button id="backBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-xl transition flex items-center gap-1 cursor-pointer">
+          ← もどる
+        </button>
+        <div class="flex gap-4">
+          <div class="flex flex-col">
+            <span class="text-xs text-slate-400 font-medium">とくてん</span>
+            <strong id="score" class="text-lg font-bold text-indigo-600">0</strong>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-xs text-slate-400 font-medium">せいかい</span>
+            <strong id="matches" class="text-lg font-bold text-emerald-600">0</strong>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col items-end">
+        <span class="text-xs text-slate-400 font-medium">のこりじかん</span>
+        <strong id="remaining" class="text-lg font-bold text-amber-500">60びょう</strong>
+      </div>
+    </section>
+  </main>
+
+  <template id="cardTemplate">
+    <button class="answer-card bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 text-slate-800 font-bold text-xl sm:text-2xl py-5 rounded-2xl shadow-sm transition transform active:scale-95 flex items-center justify-center cursor-pointer" type="button"></button>
+  </template>
+
+  <script src="records.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const levelSelect = document.getElementById("level");
+      const modeSelect = document.getElementById("mode");
+      const singleDanInput = document.getElementById("singleDan");
+      const startBtn = document.getElementById("startBtn");
+      const configPanel = document.getElementById("configPanel");
+      const gameHeader = document.getElementById("gameHeader");
+
+      const levelCards = document.querySelectorAll(".level-card");
+      const danCards = document.querySelectorAll(".dan-card");
+
+      const scoreEl = document.getElementById("score");
+      const matchesEl = document.getElementById("matches");
+      const remainingEl = document.getElementById("remaining");
+      const backBtn = document.getElementById("backBtn");
+
+      const mainContainer = document.querySelector("main");
+      let boardSection = null;
+      let countdownContainer = null;
+      let countdownText = null;
+      let quizContainer = null;
+      let questionPrompt = null;
+      let cardsGrid = null;
+      const cardTemplate = document.getElementById("cardTemplate");
+      let softKeypadContainer = null;
+      let answerDisplay = null;
+      let numBtns = null;
+      let clearBtn = null;
+
+      let score = 0;
+      let matches = 0;
+      let timeLeft = 60;
+      let timer = null;
+      let isPlaying = false;
+      let currentCorrectAnswer = "";
+      let currentInputAnswer = "";
+
+      // レベルカードの選択イベント
+      levelCards.forEach(card => {
+        card.addEventListener("click", () => {
+          levelCards.forEach(c => {
+            c.classList.remove("border-emerald-500", "bg-emerald-50", "text-emerald-900", "shadow-sm");
+            c.classList.add("border-slate-200", "bg-white", "text-slate-700");
+            const sub = c.querySelector("span:nth-child(2)");
+            if (sub) {
+              sub.className = "text-xs font-normal text-slate-500";
+            }
+          });
+          card.classList.remove("border-slate-200", "bg-white", "text-slate-700");
+          card.classList.add("border-emerald-500", "bg-emerald-50", "text-emerald-900", "shadow-sm");
+          const sub = card.querySelector("span:nth-child(2)");
+          if (sub) {
+            sub.className = "text-xs font-normal text-emerald-700";
+          }
+          levelSelect.value = card.getAttribute("data-level");
+        });
+      });
+
+      // だん選択の変更に対応するフィルタリングロジック
+      danCards.forEach(card => {
+        card.addEventListener("click", () => {
+          danCards.forEach(c => {
+            c.classList.remove("border-emerald-500", "bg-emerald-50", "text-emerald-900", "shadow-sm");
+            c.classList.add("border-slate-200", "bg-white", "text-slate-700");
+          });
+          card.classList.remove("border-slate-200", "bg-white", "text-slate-700");
+          card.classList.add("border-emerald-500", "bg-emerald-50", "text-emerald-900", "shadow-sm");
+
+          const danVal = card.getAttribute("data-dan");
+          if (danVal === "all" || danVal === "2-5" || danVal === "6-9" || danVal === "4,7") {
+            modeSelect.value = danVal;
+          } else {
+            modeSelect.value = "single";
+            singleDanInput.value = danVal;
+          }
+        });
+      });
+
+      startBtn.addEventListener("click", startCountdown);
+      backBtn.addEventListener("click", returnToConfig);
+
+      function recreateBoardSection() {
+        if (!document.getElementById("board")) {
+          const newBoard = document.createElement("section");
+          newBoard.id = "board";
+          newBoard.className = "bg-white rounded-2xl p-6 shadow-md border border-slate-100 flex flex-col items-center justify-center min-h-[320px] text-center relative";
+          newBoard.innerHTML = `
+            <div id="countdownContainer" style="display: none;" class="w-full flex flex-col items-center justify-center py-10">
+              <div id="countdownText" class="text-4xl font-extrabold text-indigo-600 animate-bounce">よーい...</div>
+            </div>
+
+            <div id="quizContainer" style="display: none;" class="w-full flex flex-col items-center">
+              <div id="questionPrompt" class="text-3xl font-extrabold text-slate-800 mb-6 tracking-tight"></div>
+              <div id="cardsGrid" class="grid grid-cols-2 gap-3 w-full max-w-md"></div>
+              
+              <div id="softKeypadContainer" style="display: none;" class="w-full max-w-md flex flex-col items-center gap-4 mt-2">
+                <div id="answerDisplay" class="w-full bg-slate-100 border-2 border-slate-300 rounded-2xl py-3 px-6 text-3xl font-extrabold text-indigo-600 tracking-wider text-center min-h-[64px] flex items-center justify-center shadow-inner">
+                  <span class="text-slate-300 font-normal text-xl">こたえをいれてね</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2.5 w-full">
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="1">1</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="2">2</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="3">3</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="4">4</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="5">5</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="6">6</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="7">7</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="8">8</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="9">9</button>
+                  <button type="button" id="clearBtn" class="bg-amber-50 hover:bg-amber-100 border-2 border-amber-200 text-amber-700 font-bold text-lg py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer col-span-2">けす</button>
+                  <button type="button" class="num-btn bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-2xl py-3 rounded-xl shadow-sm transition active:scale-95 cursor-pointer" data-val="0">0</button>
+                </div>
+              </div>
+            </div>
+            <span id="message" class="mt-4 font-bold text-sm" role="status" aria-live="polite" hidden></span>
+          `;
+          mainContainer.appendChild(newBoard);
+          
+          boardSection = newBoard;
+          countdownContainer = document.getElementById("countdownContainer");
+          countdownText = document.getElementById("countdownText");
+          quizContainer = document.getElementById("quizContainer");
+          questionPrompt = document.getElementById("questionPrompt");
+          cardsGrid = document.getElementById("cardsGrid");
+          softKeypadContainer = document.getElementById("softKeypadContainer");
+          answerDisplay = document.getElementById("answerDisplay");
+          numBtns = document.querySelectorAll(".num-btn");
+          clearBtn = document.getElementById("clearBtn");
+          
+          numBtns.forEach(btn => {
+            btn.onclick = () => {
+              if (!isPlaying) return;
+              const val = btn.getAttribute("data-val");
+              if (currentInputAnswer.length < 2) {
+                currentInputAnswer += val;
+                updateAnswerDisplay();
+
+                if (currentInputAnswer.length === currentCorrectAnswer.length) {
+                  const isCorrect = (currentInputAnswer === currentCorrectAnswer);
+                  handleSoftKeypadAnswer(isCorrect);
+                }
+              }
+            };
+          });
+
+          clearBtn.onclick = () => {
+            if (!isPlaying) return;
+            currentInputAnswer = "";
+            updateAnswerDisplay();
+          };
+        }
+      }
+
+      function returnToConfig() {
+        if (timer) {
+          clearInterval(timer);
+        }
+        isPlaying = false;
+        if (boardSection) {
+          boardSection.remove();
+          boardSection = null;
+        }
+        gameHeader.style.display = "none";
+        configPanel.style.display = "flex";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function startCountdown() {
+        if (isPlaying) {
+          clearInterval(timer);
+        }
+        configPanel.style.display = "none";
+        gameHeader.style.display = "flex";
+        
+        recreateBoardSection();
+        boardSection.style.display = "flex";
+        quizContainer.style.display = "none";
+        countdownContainer.style.display = "flex";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        countdownText.textContent = "よーい...";
+        setTimeout(() => {
+          countdownText.textContent = "スタート！";
+          setTimeout(() => {
+            countdownContainer.style.display = "none";
+            initGame();
+          }, 600);
+        }, 700);
+      }
+
+      function initGame() {
+        score = 0;
+        matches = 0;
+        timeLeft = 60;
+        isPlaying = true;
+
+        scoreEl.textContent = score;
+        matchesEl.textContent = matches;
+        remainingEl.textContent = timeLeft + "びょう";
+
+        quizContainer.style.display = "flex";
+        nextQuestion();
+
+        timer = setInterval(() => {
+          timeLeft--;
+          remainingEl.textContent = timeLeft + "びょう";
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            isPlaying = false;
+            endGame();
+          }
+        }, 1000);
+      }
+
+      function getPairsForMode() {
+        const mode = modeSelect.value;
+        const singleDan = parseInt(singleDanInput.value, 10) || 1;
+        let pairs = [];
+
+        for (let a = 1; a <= 9; a++) {
+          for (let b = 1; b <= 9; b++) {
+            let include = false;
+            if (mode === "single" && a === singleDan) {
+              include = true;
+            } else if (mode === "2-5" && (a >= 2 && a <= 5) && (b >= 1 && b <= 9)) {
+              include = true;
+            } else if (mode === "6-9" && (a >= 6 && a <= 9) && (b >= 1 && b <= 9)) {
+              include = true;
+            } else if (mode === "4,7" && (a === 4 || a === 7) && (b >= 1 && b <= 9)) {
+              include = true;
+            } else if (mode === "all") {
+              include = true;
+            }
+
+            if (include) {
+              pairs.push({ a, b, ans: a * b });
+            }
+          }
+        }
+        if (pairs.length === 0) {
+          for (let a = 1; a <= 9; a++) {
+            for (let b = 1; b <= 9; b++) {
+              pairs.push({ a, b, ans: a * b });
+            }
+          }
+        }
+        return pairs;
+      }
+
+      function generateDotCardHtml(rows, cols) {
+        const totalDots = rows * cols;
+        let dotSizeClass = "text-base sm:text-lg";
+        if (totalDots > 30) {
+          dotSizeClass = "text-[8px] sm:text-[10px]";
+        } else if (totalDots > 16) {
+          dotSizeClass = "text-xs sm:text-sm";
+        } else if (totalDots > 8) {
+          dotSizeClass = "text-sm sm:text-base";
+        }
+
+        let html = `<div class="grid items-center justify-items-center w-full h-full pointer-events-none p-1 overflow-hidden" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr));">`;
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            html += `<span class="text-indigo-600 font-extrabold ${dotSizeClass} leading-none">●</span>`;
+          }
+        }
+        html += `</div>`;
+        return html;
+      }
+
+      function nextQuestion() {
+        if (!isPlaying || !cardsGrid) return;
+
+        const pairs = getPairsForMode();
+        const targetPair = pairs[Math.floor(Math.random() * pairs.length)];
+        const level = levelSelect.value;
+
+        let promptHtml = "";
+        let correctAnswer = "";
+
+        if (level === "beginner") {
+          promptHtml = `<div class="text-3xl font-extrabold text-slate-800 my-4">${targetPair.a} × ${targetPair.b}</div>`;
+          correctAnswer = generateDotCardHtml(targetPair.a, targetPair.b);
+
+          let wrongPool = [];
+          while (wrongPool.length < 3) {
+            const wa = Math.floor(Math.random() * 9) + 1;
+            const wb = Math.floor(Math.random() * 9) + 1;
+            const candidate = generateDotCardHtml(wa, wb);
+            if (!(wa === targetPair.a && wb === targetPair.b) && !wrongPool.includes(candidate)) {
+              wrongPool.push(candidate);
+            }
+          }
+
+          cardsGrid.style.display = "grid";
+          if (softKeypadContainer) softKeypadContainer.style.display = "none";
+          questionPrompt.innerHTML = promptHtml;
+
+          const options = [correctAnswer, ...wrongPool];
+          shuffleArray(options);
+
+          cardsGrid.innerHTML = "";
+          options.forEach(opt => {
+            const clone = cardTemplate.content.cloneNode(true);
+            const btn = clone.querySelector(".answer-card");
+            btn.innerHTML = opt;
+            btn.className = "answer-card bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 text-slate-800 font-bold rounded-2xl shadow-sm transition transform active:scale-95 flex items-center justify-center cursor-pointer h-24 sm:h-28 p-2 overflow-hidden";
+            btn.addEventListener("click", () => handleAnswer(opt === correctAnswer, btn));
+            cardsGrid.appendChild(clone);
+          });
+
+        } else if (level === "intermediate") {
+          promptHtml = `<div class="text-3xl font-extrabold text-slate-800 my-4">${targetPair.a} × ${targetPair.b} = ?</div>`;
+          correctAnswer = targetPair.ans.toString();
+
+          let wrongPool = [];
+          while (wrongPool.length < 3) {
+            const offset = (Math.floor(Math.random() * 4) + 1) * (Math.random() < 0.5 ? 1 : -1);
+            const wAns = targetPair.ans + offset;
+            if (wAns > 0 && wAns !== targetPair.ans && !wrongPool.includes(wAns.toString())) {
+              wrongPool.push(wAns.toString());
+            } else {
+              const randAns = Math.floor(Math.random() * 81) + 1;
+              if (randAns !== targetPair.ans && !wrongPool.includes(randAns.toString())) {
+                wrongPool.push(randAns.toString());
+              }
+            }
+          }
+
+          cardsGrid.style.display = "grid";
+          if (softKeypadContainer) softKeypadContainer.style.display = "none";
+          questionPrompt.innerHTML = promptHtml;
+
+          const options = [correctAnswer, ...wrongPool];
+          shuffleArray(options);
+
+          cardsGrid.innerHTML = "";
+          options.forEach(opt => {
+            const clone = cardTemplate.content.cloneNode(true);
+            const btn = clone.querySelector(".answer-card");
+            btn.textContent = opt;
+            btn.className = "answer-card bg-slate-50 border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 text-slate-800 font-bold text-xl sm:text-2xl py-5 rounded-2xl shadow-sm transition transform active:scale-95 flex items-center justify-center cursor-pointer";
+            btn.addEventListener("click", () => handleAnswer(opt === correctAnswer, btn));
+            cardsGrid.appendChild(clone);
+          });
+
+        } else {
+          promptHtml = `<div class="text-3xl font-extrabold text-slate-800 my-4">${targetPair.a} × ${targetPair.b} = ?</div>`;
+          currentCorrectAnswer = targetPair.ans.toString();
+          currentInputAnswer = "";
+          updateAnswerDisplay();
+
+          if (cardsGrid) cardsGrid.style.display = "none";
+          if (softKeypadContainer) softKeypadContainer.style.display = "flex";
+          questionPrompt.innerHTML = promptHtml;
+        }
+      }
+
+      function updateAnswerDisplay() {
+        if (!answerDisplay) return;
+        if (currentInputAnswer === "") {
+          answerDisplay.innerHTML = `<span class="text-slate-300 font-normal text-xl">こたえをいれてね</span>`;
+        } else {
+          answerDisplay.textContent = currentInputAnswer;
+        }
+      }
+
+      function handleAnswer(isCorrect, btn) {
+        if (!isPlaying) return;
+
+        const allButtons = cardsGrid.querySelectorAll("button");
+        allButtons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+          score += 10;
+          matches += 1;
+          scoreEl.textContent = score;
+          matchesEl.textContent = matches;
+          btn.classList.add("animate-correct");
+          setTimeout(() => {
+            if (isPlaying) nextQuestion();
+          }, 400);
+        } else {
+          btn.classList.add("animate-incorrect");
+          setTimeout(() => {
+            if (isPlaying) nextQuestion();
+          }, 600);
+        }
+      }
+
+      function handleSoftKeypadAnswer(isCorrect) {
+        if (!isPlaying) return;
+
+        numBtns.forEach(b => b.disabled = true);
+        if (clearBtn) clearBtn.disabled = true;
+
+        if (isCorrect) {
+          score += 10;
+          matches += 1;
+          scoreEl.textContent = score;
+          matchesEl.textContent = matches;
+          answerDisplay.classList.add("bg-emerald-500", "text-white", "border-emerald-500");
+          answerDisplay.textContent = currentInputAnswer + " ⭕️";
+          setTimeout(() => {
+            answerDisplay.classList.remove("bg-emerald-500", "text-white", "border-emerald-500");
+            numBtns.forEach(b => b.disabled = false);
+            if (clearBtn) clearBtn.disabled = false;
+            if (isPlaying) nextQuestion();
+          }, 400);
+        } else {
+          answerDisplay.classList.add("bg-rose-500", "text-white", "border-rose-500");
+          answerDisplay.textContent = currentInputAnswer + " ❌";
+          setTimeout(() => {
+            answerDisplay.classList.remove("bg-rose-500", "text-white", "border-rose-500");
+            currentInputAnswer = "";
+            updateAnswerDisplay();
+            numBtns.forEach(b => b.disabled = false);
+            if (clearBtn) clearBtn.disabled = false;
+            if (isPlaying) nextQuestion();
+          }, 600);
+        }
+      }
+
+      function endGame() {
+        if (score > 0) {
+          try {
+            const danKey = modeSelect.value === "single" ? String(parseInt(singleDanInput.value, 10) || 1) : modeSelect.value;
+            const lvMap = { beginner: 1, intermediate: 2, advanced: 3 };
+            KukuRecords.showReward(KukuRecords.add({
+              app: "kotae", dan: danKey, level: lvMap[levelSelect.value] || 1, value: score
+            }));
+          } catch (e) { console.warn(e); }
+        }
+        gameHeader.style.display = "none";
+        configPanel.style.display = "flex";
+        if (boardSection) {
+          boardSection.remove();
+          boardSection = null;
+        }
+      }
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+    });
+  </script>
+</body>
+</html>

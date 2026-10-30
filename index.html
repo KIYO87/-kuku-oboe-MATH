@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>九九おぼえMATH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'M PLUS Rounded 1c', sans-serif; background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%); touch-action: manipulation; }
+    .menu-btn { transition: transform .1s; }
+    .menu-btn:active { transform: scale(.97); }
+  </style>
+</head>
+<body class="min-h-screen text-slate-700 flex flex-col items-center justify-center p-4">
+  <main class="w-full max-w-md flex flex-col gap-5">
+    <header class="text-center">
+      <div class="text-5xl mb-2">⭐</div>
+      <h1 class="text-4xl font-black text-emerald-600 tracking-wide">九九おぼえMATH</h1>
+      <p class="text-sm font-bold text-slate-500 mt-2">たのしく 九九を マスターしよう！</p>
+    </header>
+
+    <a href="kuku-kotae.html" class="menu-btn block bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl p-5 shadow-lg">
+      <div class="flex items-center gap-4">
+        <div class="text-4xl">✏️</div>
+        <div>
+          <div class="text-2xl font-black">九九答えMATH</div>
+          <div class="text-xs font-bold text-indigo-100 mt-0.5">60びょうで いくつ とけるかな？</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="kuku-kiite.html" class="menu-btn block bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl p-5 shadow-lg">
+      <div class="flex items-center gap-4">
+        <div class="text-4xl">🎤</div>
+        <div>
+          <div class="text-2xl font-black">九九聞いてもらいMATH</div>
+          <div class="text-xs font-bold text-emerald-100 mt-0.5">こえに出して すらすら となえよう</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="gambari.html" class="menu-btn block bg-amber-400 hover:bg-amber-500 text-white rounded-3xl p-5 shadow-lg">
+      <div class="flex items-center gap-4">
+        <div class="text-4xl">🏆</div>
+        <div class="flex-1">
+          <div class="text-2xl font-black">きみのがんばり</div>
+          <div id="rank-line" class="text-xs font-bold text-amber-50 mt-0.5">きろくと シールを みよう</div>
+        </div>
+      </div>
+    </a>
+
+    <p class="text-center text-xs text-slate-400">© 2026 小学校算数サポートアプリ</p>
+  </main>
+
+  <script src="records.js"></script>
+  <script>
+    (function () {
+      try {
+        var n = KukuRecords.load().length;
+        var r = KukuRecords.RANKS[KukuRecords.rankIndex(n)];
+        document.getElementById('rank-line').textContent = r.icon + ' ' + r.name + '　シール ' + n + 'まい';
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

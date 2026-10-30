@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九九聞いてもらいMATH</title>
+    <!-- Tailwind CSS for modern, kid-friendly styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for friendly icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for readable rounded typography -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%);
+            touch-action: manipulation;
+        }
+        .bounce-custom {
+            animation: bounce 1s infinite;
+        }
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-btn {
+            animation: pulse-scale 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-700 flex flex-col items-center justify-between p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl bg-white shadow-md rounded-2xl p-4 mb-4 flex items-center justify-between border-b-4 border-emerald-400">
+        <div class="flex items-center space-x-3">
+            <a href="index.html" class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-2 rounded-xl">🏠 トップ</a>
+            <div class="bg-emerald-500 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-black text-emerald-600">九九聞いてもらいMATH</h1>
+            </div>
+        </div>
+        <div id="status-badge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>やさしめ判定モード</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-white shadow-xl rounded-3xl p-6 sm:p-8 flex flex-col items-center relative overflow-hidden mb-4 border-2 border-emerald-100">
+
+        <!-- STEP 1: Selection Screen -->
+        <div id="screen-select" class="w-full flex flex-col items-center space-y-6">
+            <h2 class="text-2xl font-black text-slate-700 text-center">
+                どの九九にちょうせんする？
+            </h2>
+
+            <!-- Level Selection -->
+            <div class="w-full">
+                <label class="block text-sm font-bold text-slate-500 mb-2">① レベルをえらんでね</label>
+                <div class="grid grid-cols-3 gap-3" id="level-buttons">
+                    <button onclick="setLevel(1)" id="btn-level-1" class="level-btn p-3 rounded-xl font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs sm:text-sm shadow-sm transition flex flex-col items-center">
+                        <span class="text-base font-black">レベル 1</span>
+                        <span class="text-[10px] text-slate-500">（よみかた付き）</span>
+                    </button>
+                    <button onclick="setLevel(2)" id="btn-level-2" class="level-btn p-3 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-600 text-xs sm:text-sm shadow-sm transition flex flex-col items-center">
+                        <span class="text-base font-black">レベル 2</span>
+                        <span class="text-[10px] text-slate-500">（式のみ）</span>
+                    </button>
+                    <button onclick="setLevel(3)" id="btn-level-3" class="level-btn p-3 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-600 text-xs sm:text-sm shadow-sm transition flex flex-col items-center">
+                        <span class="text-base font-black">レベル 3</span>
+                        <span class="text-[10px] text-slate-500">（「？」に挑戦）</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dan Selection Grid -->
+            <div class="w-full">
+                <label class="block text-sm font-bold text-slate-500 mb-2">② だんをえらんでね</label>
+                <div class="grid grid-cols-3 sm:grid-cols-9 gap-2" id="dan-buttons">
+                    <!-- JS will populate -->
+                </div>
+            </div>
+
+            <!-- Order Selection -->
+            <div class="w-full">
+                <label class="block text-sm font-bold text-slate-500 mb-2">③ じゅんばんをえらんでね</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setOrder('up')" id="btn-order-up" class="order-btn p-3.5 rounded-xl font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 flex items-center justify-center gap-2 shadow-sm transition">
+                        <i class="fa-solid fa-arrow-up-long"></i> 上がり九九 (1から)
+                    </button>
+                    <button onclick="setOrder('down')" id="btn-order-down" class="order-btn p-3.5 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-500 flex items-center justify-center gap-2 shadow-sm transition">
+                        <i class="fa-solid fa-arrow-down-long"></i> 下がり九九 (9から)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Start Button -->
+            <button onclick="startChallenge()" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-black text-xl shadow-lg hover:from-emerald-600 hover:to-teal-600 transform active:scale-95 transition pulse-btn flex items-center justify-center gap-3">
+                <i class="fa-solid fa-play"></i> はじめる！
+            </button>
+        </div>
+
+        <!-- STEP 2: Challenge Screen (Active listening & Practice) -->
+        <div id="screen-challenge" class="w-full hidden flex flex-col items-center space-y-6">
+            <div class="flex justify-between w-full items-center">
+                <button onclick="backToSelect()" class="text-xs font-bold text-slate-400 hover:text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">
+                    <i class="fa-solid fa-arrow-left"> &nbsp;もどる</i>
+                </button>
+                <div class="text-sm font-black bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full" id="active-title">
+                    レベル1 / 1のだん （上がり）
+                </div>
+                <div class="text-sm font-bold text-slate-500">
+                    ⏱️ <span id="timer-display">0.0</span>秒
+                </div>
+            </div>
+
+            <!-- Prompt Card -->
+            <div class="w-full bg-gradient-to-b from-emerald-50 to-teal-50 rounded-3xl p-6 border-2 border-emerald-200 text-center shadow-inner flex flex-col items-center">
+                <p class="text-xs font-bold text-emerald-600 mb-2" id="prompt-sub-text">こえに出してとなえてね！</p>
+                <div id="current-reading" class="text-lg sm:text-xl font-black text-emerald-700 mb-1 h-8 tracking-wide">
+                    いんいちが１
+                </div>
+                <div id="current-expression" class="text-4xl sm:text-5xl font-black text-slate-800 mb-4 tracking-wider">
+                    2×1=2
+                </div>
+
+                <!-- Guidance Hint -->
+                <div class="flex items-center gap-2">
+                    <button onclick="speakCurrentExpression()" class="bg-white text-emerald-600 border border-emerald-300 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-emerald-50 flex items-center gap-1">
+                        <i class="fa-solid fa-volume-high"></i> お手本をきく
+                    </button>
+                </div>
+            </div>
+
+            <!-- Speech Visualizer / Recognition Status -->
+            <div class="w-full bg-slate-900 text-emerald-400 rounded-2xl p-4 text-center shadow-lg">
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <span id="mic-icon" class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span id="mic-status-text" class="text-xs font-bold tracking-wider text-slate-300">マイクききとり中... (やさしめ判定)</span>
+                </div>
+                <p id="recognized-speech" class="text-lg font-bold text-white min-h-[1.8rem] truncate px-2">
+                    （ここにききとったことばが出ます）
+                </p>
+            </div>
+
+            <!-- Navigation Controls / Manual Override for Classroom Reliability -->
+            <div class="w-full grid grid-cols-2 gap-3">
+                <button onclick="skipCurrentStep()" class="py-3 bg-amber-100 text-amber-800 rounded-xl font-bold text-sm shadow hover:bg-amber-200 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-forward"></i> つぎへすすむ（手動）
+                </button>
+                <button onclick="checkSpeechManually()" class="py-3 bg-emerald-500 text-white rounded-xl font-bold text-sm shadow hover:bg-emerald-600 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> できたよ！と判定
+                </button>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 11.1%;"></div>
+            </div>
+            <p class="text-xs text-slate-400 font-bold" id="progress-count">1 / 9</p>
+        </div>
+
+        <!-- STEP 3: Result Screen -->
+        <div id="screen-result" class="w-full hidden flex flex-col items-center space-y-6 text-center animate-fade-in">
+            <div class="w-24 h-24 bg-amber-400 text-white rounded-full flex items-center justify-center text-5xl shadow-lg mx-auto bounce-custom">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+                <h2 class="text-3xl font-black text-slate-800 mb-1" id="result-title">よくがんばりました！</h2>
+                <p class="text-sm text-slate-400" id="result-dan-name">レベル1 / 1のだん （上がり九九）クリア！</p>
+            </div>
+
+            <!-- Score Details Box -->
+            <div class="w-full bg-slate-50 rounded-2xl p-4 border border-slate-200 grid grid-cols-2 gap-4">
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                    <p class="text-xs text-slate-400 font-bold mb-1">かかったじかん</p>
+                    <p class="text-2xl font-black text-emerald-600" id="result-time">0.0秒</p>
+                </div>
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                    <p class="text-xs text-slate-400 font-bold mb-1">ひょうしょう</p>
+                    <p class="text-lg font-black text-amber-500" id="result-rank">★ めいじん ★</p>
+                </div>
+            </div>
+
+            <!-- Teacher/Encouragement Message -->
+            <div class="w-full bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 text-left flex items-start gap-3">
+                <div class="bg-emerald-500 text-white p-2 rounded-xl text-xl mt-0.5">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-black text-emerald-700 mb-1">せんせいからのメッセージ</h3>
+                    <p id="teacher-comment" class="text-sm font-bold text-slate-700 leading-relaxed">
+                        すばらしいスピードです！声の大きさもはっきりしていてとても聞き取りやすかったですよ。
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="w-full grid grid-cols-2 gap-3">
+                <button onclick="restartChallenge()" class="py-3.5 bg-slate-100 text-slate-600 rounded-xl font-black text-sm shadow hover:bg-slate-200 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> もういちど
+                </button>
+                <button onclick="backToSelect()" class="py-3.5 bg-emerald-500 text-white rounded-xl font-black text-sm shadow hover:bg-emerald-600 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-house"></i> ほかのだんへ
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Help Note -->
+    <footer class="w-full max-w-4xl text-center text-xs text-slate-400 space-y-1">
+        <p>※ 音声認識（Web Speech API）に対応しています。マイクに向かってハッキリとなえてね。</p>
+        <p>© 2026 小学校算数サポートアプリ</p>
+    </footer>
+
+    <script src="records.js"></script>
+    <!-- App Logic Script -->
+    <script>
+        // Data for Kuku tables including expression formula and reading
+        const kukuData = {
+            1: [
+                { exp: "1×1＝1", eq: "1×1", ans: "1", expDisplay: "1×1＝1", eqDisplay: "1×1＝1", eqQuestion: "1×1＝？", exp: "いんいちが１", keywords: ["いんいち", "いちいち", "いん", "1", "いち", "一"] },
+                { exp: "1×2", eq: "1×2", ans: "2", expDisplay: "1×2＝2", eqDisplay: "1×2＝2", eqQuestion: "1×2＝？", exp: "いんにが２", keywords: ["いんに", "に", "2", "二"] },
+                { exp: "1×3", eq: "1×3", ans: "3", expDisplay: "1×3＝3", eqDisplay: "1×3＝3", eqQuestion: "1×3＝？", exp: "いんさんが３", keywords: ["いんさん", "さん", "3", "三"] },
+                { exp: "1×4", eq: "1×4", ans: "4", expDisplay: "1×4＝4", eqDisplay: "1×4＝4", eqQuestion: "1×4＝？", exp: "いんしが４", keywords: ["いんし", "し", "よん", "4", "四"] },
+                { exp: "1×5", eq: "1×5", ans: "5", expDisplay: "1×5＝5", eqDisplay: "1×5＝5", eqQuestion: "1×5＝？", exp: "いんごが５", keywords: ["いんご", "ご", "5", "五"] },
+                { exp: "1×6", eq: "1×6", ans: "6", expDisplay: "1×6＝6", eqDisplay: "1×6＝6", eqQuestion: "1×6＝？", exp: "いんろくが６", keywords: ["いんろく", "ろく", "6", "六"] },
+                { exp: "1×7", eq: "1×7", ans: "7", expDisplay: "1×7＝7", eqDisplay: "1×7＝7", eqQuestion: "1×7＝？", exp: "いんしちは７", keywords: ["いんしち", "しち", "なな", "7", "七"] },
+                { exp: "1×8", eq: "1×8", ans: "8", expDisplay: "1×8＝8", eqDisplay: "1×8＝8", eqQuestion: "1×8＝？", exp: "いんはちが８", keywords: ["いんはち", "はち", "8", "八"] },
+                { exp: "1×9", eq: "1×9", ans: "9", expDisplay: "1×9＝9", eqDisplay: "1×9＝9", eqQuestion: "1×9＝？", exp: "いんくが９", keywords: ["いんく", "く", "きゅう", "9", "九"] }
+            ],
+            2: [
+                { expDisplay: "2×1＝2", eqDisplay: "2×1＝2", eqQuestion: "2×1＝？", exp: "にいちが２", keywords: ["にいち", "に", "2", "二"] },
+                { expDisplay: "2×2＝4", eqDisplay: "2×2＝4", eqQuestion: "2×2＝？", exp: "ににんが４", keywords: ["ににん", "し", "よん", "4", "四"] },
+                { expDisplay: "2×3＝6", eqDisplay: "2×3＝6", eqQuestion: "2×3＝？", exp: "にさんが６", keywords: ["にさん", "ろく", "6", "六"] },
+                { expDisplay: "2×4＝8", eqDisplay: "2×4＝8", eqQuestion: "2×4＝？", exp: "にしが８", keywords: ["にし", "はち", "8", "八"] },
+                { expDisplay: "2×5＝10", eqDisplay: "2×5＝10", eqQuestion: "2×5＝？", exp: "にごじゅう", keywords: ["にご", "じゅう", "10", "十"] },
+                { expDisplay: "2×6＝12", eqDisplay: "2×6＝12", eqQuestion: "2×6＝？", exp: "にろくじゅうに", keywords: ["にろく", "じゅうに", "12"] },
+                { expDisplay: "2×7＝14", eqDisplay: "2×7＝14", eqQuestion: "2×7＝？", exp: "にしちじゅうし", keywords: ["にしち", "じゅうし", "14"] },
+                { expDisplay: "2×8＝16", eqDisplay: "2×8＝16", eqQuestion: "2×8＝？", exp: "にはちじゅうろく", keywords: ["にはち", "じゅうろく", "16"] },
+                { expDisplay: "2×9＝18", eqDisplay: "2×9＝18", eqQuestion: "2×9＝？", exp: "にくじゅうはち", keywords: ["にく", "じゅうはち", "18"] }
+            ],
+            3: [
+                { expDisplay: "3×1＝3", eqDisplay: "3×1＝3", eqQuestion: "3×1＝？", exp: "さんいちが３", keywords: ["さんいち", "さん", "3", "三"] },
+                { expDisplay: "3×2＝6", eqDisplay: "3×2＝6", eqQuestion: "3×2＝？", exp: "さんにが６", keywords: ["さんに", "ろく", "6", "六"] },
+                { expDisplay: "3×3＝9", eqDisplay: "3×3＝9", eqQuestion: "3×3＝？", exp: "さざんが９", keywords: ["さざん", "く", "きゅう", "9", "九"] },
+                { expDisplay: "3×4＝12", eqDisplay: "3×4＝12", eqQuestion: "3×4＝？", exp: "さんしじゅうに", keywords: ["さんし", "じゅうに", "12"] },
+                { expDisplay: "3×5＝15", eqDisplay: "3×5＝15", eqQuestion: "3×5＝？", exp: "さんごじゅうご", keywords: ["さんご", "じゅうご", "15"] },
+                { expDisplay: "3×6＝18", eqDisplay: "3×6＝18", eqQuestion: "3×6＝？", exp: "さぶろくじゅうはち", keywords: ["さぶろく", "さんろく", "じゅうはち", "18"] },
+                { expDisplay: "3×7＝21", eqDisplay: "3×7＝21", eqQuestion: "3×7＝？", exp: "さんしちにじゅういち", keywords: ["さんしち", "じゅういち", "21"] },
+                { expDisplay: "3×8＝24", eqDisplay: "3×8＝24", eqQuestion: "3×8＝？", exp: "さんぱにじゅうし", keywords: ["さんぱ", "にじゅうし", "24"] },
+                { expDisplay: "3×9＝27", eqDisplay: "3×9＝27", eqQuestion: "3×9＝？", exp: "さんくにじゅうしち", keywords: ["さんくに", "じゅうしち", "27"] }
+            ],
+            4: [
+                { expDisplay: "4×1＝4", eqDisplay: "4×1＝4", eqQuestion: "4×1＝？", exp: "しいちが４", keywords: ["しいち", "し", "よん", "4", "四"] },
+                { expDisplay: "4×2＝8", eqDisplay: "4×2＝8", eqQuestion: "4×2＝？", exp: "しにが８", keywords: ["しに", "はち", "8", "八"] },
+                { expDisplay: "4×3＝12", eqDisplay: "4×3＝12", eqQuestion: "4×3＝？", exp: "しさんじゅうに", keywords: ["しさん", "さんし", "じゅうに", "12"] },
+                { expDisplay: "4×4＝16", eqDisplay: "4×4＝16", eqQuestion: "4×4＝？", exp: "ししじゅうろく", keywords: ["しし", "じゅうろく", "16"] },
+                { expDisplay: "4×5＝20", eqDisplay: "4×5＝20", eqQuestion: "4×5＝？", exp: "しごにじゅう", keywords: ["しご", "にじゅう", "20"] },
+                { expDisplay: "4×6＝24", eqDisplay: "4×6＝24", eqQuestion: "4×6＝？", exp: "しろくじゅうし", keywords: ["しろく", "じゅうし", "24"] },
+                { expDisplay: "4×7＝28", eqDisplay: "4×7＝28", eqQuestion: "4×7＝？", exp: "ししちにじゅうはち", keywords: ["ししち", "じゅうはち", "28"] },
+                { expDisplay: "4×8＝32", eqDisplay: "4×8＝32", eqQuestion: "4×8＝？", exp: "しはさんじゅうに", keywords: ["しは", "さんじゅうに", "32"] },
+                { expDisplay: "4×9＝36", eqDisplay: "4×9＝36", eqQuestion: "4×9＝？", exp: "しくさんじゅうろく", keywords: ["しく", "さんじゅうろく", "36"] }
+            ],
+            5: [
+                { expDisplay: "5×1＝5", eqDisplay: "5×1＝5", eqQuestion: "5×1＝？", exp: "ごいちが５", keywords: ["ごいち", "ご", "5", "五"] },
+                { expDisplay: "5×2＝10", eqDisplay: "5×2＝10", eqQuestion: "5×2＝？", exp: "ごにじゅう", keywords: ["ごに", "にじゅう", "10"] },
+                { expDisplay: "5×3＝15", eqDisplay: "5×3＝15", eqQuestion: "5×3＝？", exp: "ごさんじゅうご", keywords: ["ごさん", "さんじゅうご", "15"] },
+                { expDisplay: "5×4＝20", eqDisplay: "5×4＝20", eqQuestion: "5×4＝？", exp: "ごしにじゅう", keywords: ["ごし", "にじゅう", "20"] },
+                { expDisplay: "5×5＝25", eqDisplay: "5×5＝25", eqQuestion: "5×5＝？", exp: "ごごにじゅうご", keywords: ["ごご", "にじゅうご", "25"] },
+                { expDisplay: "5×6＝30", eqDisplay: "5×6＝30", eqQuestion: "5×6＝？", exp: "ごろくさんじゅう", keywords: ["ごろく", "さんじゅう", "30"] },
+                { expDisplay: "5×7＝35", eqDisplay: "5×7＝35", eqQuestion: "5×7＝？", exp: "ごしちさんじゅうご", keywords: ["ごしち", "さんじゅうご", "35"] },
+                { expDisplay: "5×8＝40", eqDisplay: "5×8＝40", eqQuestion: "5×8＝？", exp: "ごはしじゅう", keywords: ["ごはし", "しじゅう", "40"] },
+                { expDisplay: "5×9＝45", eqDisplay: "5×9＝45", eqQuestion: "5×9＝？", exp: "ごっくしじゅうご", keywords: ["ごっく", "ごく", "しじゅうご", "45"] }
+            ],
+            6: [
+                { expDisplay: "6×1＝6", eqDisplay: "6×1＝6", eqQuestion: "6×1＝？", exp: "ろくいちが６", keywords: ["ろくいち", "ろく", "6", "六"] },
+                { expDisplay: "6×2＝12", eqDisplay: "6×2＝12", eqQuestion: "6×2＝？", exp: "ろくにじゅうに", keywords: ["ろくに", "じゅうに", "12"] },
+                { expDisplay: "6×3＝18", eqDisplay: "6×3＝18", eqQuestion: "6×3＝？", exp: "ろくさんじゅうはち", keywords: ["ろくさん", "じゅうはち", "18"] },
+                { expDisplay: "6×4＝24", eqDisplay: "6×4＝24", eqQuestion: "6×4＝？", exp: "ろくしにじゅうし", keywords: ["ろくし", "にじゅうし", "24"] },
+                { expDisplay: "6×5＝30", eqDisplay: "6×5＝30", eqQuestion: "6×5＝？", exp: "ろくごさんじゅう", keywords: ["ろくご", "さんじゅう", "30"] },
+                { expDisplay: "6×6＝36", eqDisplay: "6×6＝36", eqQuestion: "6×6＝？", exp: "ろくろくさんじゅうろく", keywords: ["ろくろく", "さんじゅうろく", "36"] },
+                { expDisplay: "6×7＝42", eqDisplay: "6×7＝42", eqQuestion: "6×7＝？", exp: "ろくしちしじゅうに", keywords: ["ろくしち", "しじゅうに", "42"] },
+                { expDisplay: "6×8＝48", eqDisplay: "6×8＝48", eqQuestion: "6×8＝？", exp: "ろくはしじゅうはち", keywords: ["ろくは", "しじゅうはち", "48"] },
+                { expDisplay: "6×9＝54", eqDisplay: "6×9＝54", eqQuestion: "6×9＝？", exp: "ろっくごじゅうし", keywords: ["ろっく", "ろくく", "ごじゅうし", "54"] }
+            ],
+            7: [
+                { expDisplay: "7×1＝7", eqDisplay: "7×1＝7", eqQuestion: "7×1＝？", exp: "しちいちが７", keywords: ["しちいち", "しち", "なな", "7", "七"] },
+                { expDisplay: "7×2＝14", eqDisplay: "7×2＝14", eqQuestion: "7×2＝？", exp: "しちにじゅうし", keywords: ["しちに", "じゅうし", "14"] },
+                { expDisplay: "7×3＝21", eqDisplay: "7×3＝21", eqQuestion: "7×3＝？", exp: "さんしちにじゅういち", keywords: ["さんしち", "じゅういち", "21"] },
+                { expDisplay: "7×4＝28", eqDisplay: "7×4＝28", eqQuestion: "7×4＝？", exp: "しちしにじゅうはち", keywords: ["しちし", "じゅうはち", "28"] },
+                { expDisplay: "7×5＝35", eqDisplay: "7×5＝35", eqQuestion: "7×5＝？", exp: "しちごさんじゅうご", keywords: ["しちご", "さんじゅうご", "35"] },
+                { expDisplay: "7×6＝42", eqDisplay: "7×6＝42", eqQuestion: "7×6＝？", exp: "しちろくしじゅうに", keywords: ["しちろく", "しじゅうに", "42"] },
+                { expDisplay: "7×7＝49", eqDisplay: "7×7＝49", eqQuestion: "7×7＝？", exp: "しちしちしじゅうく", keywords: ["しちしち", "しじゅうく", "49"] },
+                { expDisplay: "7×8＝56", eqDisplay: "7×8＝56", eqQuestion: "7×8＝？", exp: "しちはごじゅうろく", keywords: ["しちは", "ごじゅうろく", "56"] },
+                { expDisplay: "7×9＝63", eqDisplay: "7×9＝63", eqQuestion: "7×9＝？", exp: "しちくろくじゅうさん", keywords: ["しちく", "ろくじゅうさん", "63"] }
+            ],
+            8: [
+                { expDisplay: "8×1＝8", eqDisplay: "8×1＝8", eqQuestion: "8×1＝？", exp: "はちいちが８", keywords: ["はちいち", "はち", "8", "八"] },
+                { expDisplay: "8×2＝16", eqDisplay: "8×2＝16", eqQuestion: "8×2＝？", exp: "はちにじゅうろく", keywords: ["はちに", "じゅうろく", "16"] },
+                { expDisplay: "8×3＝24", eqDisplay: "8×3＝24", eqQuestion: "8×3＝？", exp: "はちさんにじゅうし", keywords: ["はちさん", "にじゅうし", "24"] },
+                { expDisplay: "8×4＝32", eqDisplay: "8×4＝32", eqQuestion: "8×4＝？", exp: "はちしさんじゅうに", keywords: ["はちし", "さんじゅうに", "32"] },
+                { expDisplay: "8×5＝40", eqDisplay: "8×5＝40", eqQuestion: "8×5＝？", exp: "はちごしじゅう", keywords: ["はちご", "しじゅう", "40"] },
+                { expDisplay: "8×6＝48", eqDisplay: "8×6＝48", eqQuestion: "8×6＝？", exp: "はちろくしじゅうはち", keywords: ["はちろく", "しじゅうはち", "48"] },
+                { expDisplay: "8×7＝56", eqDisplay: "8×7＝56", eqQuestion: "8×7＝？", exp: "はちしちごじゅうろく", keywords: ["はちしち", "ごじゅうろく", "56"] },
+                { expDisplay: "8×8＝64", eqDisplay: "8×8＝64", eqQuestion: "8×8＝？", exp: "はっぱろくじゅうし", keywords: ["はっぱ", "ろくじゅうし", "64"] },
+                { expDisplay: "8×9＝72", eqDisplay: "8×9＝72", eqQuestion: "8×9＝？", exp: "はっくしちじゅうに", keywords: ["はっく", "しちじゅうに", "72"] }
+            ],
+            9: [
+                { expDisplay: "9×1＝9", eqDisplay: "9×1＝9", eqQuestion: "9×1＝？", exp: "くいちが９", keywords: ["くいち", "く", "きゅう", "9", "九"] },
+                { expDisplay: "9×2＝18", eqDisplay: "9×2＝18", eqQuestion: "9×2＝？", exp: "くにじゅうはち", keywords: ["くにじゅうはち", "くにじゅう", "18"] },
+                { expDisplay: "9×3＝27", eqDisplay: "9×3＝27", eqQuestion: "9×3＝？", exp: "くさんにじゅうしち", keywords: ["くさん", "にじゅうしち", "27"] },
+                { expDisplay: "9×4＝36", eqDisplay: "9×4＝36", eqQuestion: "9×4＝？", exp: "くしさんじゅうろく", keywords: ["くし", "さんじゅうろく", "36"] },
+                { expDisplay: "9×5＝45", eqDisplay: "9×5＝45", eqQuestion: "9×5＝？", exp: "くごしじゅうご", keywords: ["くご", "しじゅうご", "45"] },
+                { expDisplay: "9×6＝54", eqDisplay: "9×6＝54", eqQuestion: "9×6＝？", exp: "くろくごじゅうし", keywords: ["くろく", "ごじゅうし", "54"] },
+                { expDisplay: "9×7＝63", eqDisplay: "9×7＝63", eqQuestion: "9×7＝？", exp: "くしちろくじゅうさん", keywords: ["くしち", "ろくじゅうさん", "63"] },
+                { expDisplay: "9×8＝72", eqDisplay: "9×8＝72", eqQuestion: "9×8＝？", exp: "くはしちじゅうに", keywords: ["くは", "しちじゅうに", "72"] },
+                { expDisplay: "9×9＝81", eqDisplay: "9×9＝81", eqQuestion: "9×9＝？", exp: "くくはちじゅういち", keywords: ["くく", "はちじゅういち", "81"] }
+            ]
+        };
+
+        // Fix dynamic display expression generator for each dan to match correct multipliers (e.g., 2×1, 2×2...)
+        function getDanItems(dan, order) {
+            let list = [];
+            for (let i = 1; i <= 9; i++) {
+                let multiplier = (order === 'up') ? i : (10 - i);
+                let ans = dan * multiplier;
+                let readingObj = kukuData[dan][multiplier - 1];
+                list.push({
+                    exp: readingObj.exp,
+                    keywords: readingObj.keywords,
+                    expDisplay: `${dan}×${multiplier}＝${ans}`,
+                    eqDisplay: `${dan}×${multiplier}＝${ans}`,
+                    eqQuestion: `${dan}×${multiplier}＝？`
+                });
+            }
+            return list;
+        }
+
+        // State variables
+        let selectedLevel = 1; // 1, 2, or 3
+        let selectedDan = 1;
+        let selectedOrder = 'up'; // 'up' or 'down'
+        let currentStepIndex = 0;
+        let currentSequence = [];
+        let startTime = 0;
+        let timerInterval = null;
+        let recognition = null;
+        let isListening = false;
+
+        // Initialize Dan buttons on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('dan-buttons');
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.className = `dan-btn py-1.5 px-2 rounded-xl font-black text-sm sm:text-base border-2 transition shadow-sm ${i === 1 ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`;
+                btn.innerHTML = `${i}の段`;
+                btn.onclick = () => selectDan(i);
+                container.appendChild(btn);
+            }
+            setupSpeechRecognition();
+        });
+
+        function setLevel(lvl) {
+            selectedLevel = lvl;
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`btn-level-${i}`);
+                if (i === lvl) {
+                    btn.className = "level-btn p-2.5 rounded-xl font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 text-xs sm:text-sm shadow-sm transition flex flex-col items-center";
+                } else {
+                    btn.className = "level-btn p-2.5 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-600 text-xs sm:text-sm shadow-sm transition flex flex-col items-center";
+                }
+            }
+        }
+
+        function selectDan(dan) {
+            selectedDan = dan;
+            document.querySelectorAll('.dan-btn').forEach((btn, idx) => {
+                if ((idx + 1) === dan) {
+                    btn.className = "dan-btn py-1.5 px-2 rounded-xl font-black text-sm sm:text-base border-2 border-emerald-500 bg-emerald-50 text-emerald-700 shadow";
+                } else {
+                    btn.className = "dan-btn py-1.5 px-2 rounded-xl font-black text-sm sm:text-base border-2 border-slate-200 bg-white text-slate-600 hover:bg-slate-50";
+                }
+            });
+        }
+
+        function setOrder(order) {
+            selectedOrder = order;
+            const upBtn = document.getElementById('btn-order-up');
+            const downBtn = document.getElementById('btn-order-down');
+            if (order === 'up') {
+                upBtn.className = "order-btn p-3 rounded-xl font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 flex items-center justify-center gap-2 shadow-sm transition";
+                downBtn.className = "order-btn p-3 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-500 flex items-center justify-center gap-2 shadow-sm transition";
+            } else {
+                downBtn.className = "order-btn p-3 rounded-xl font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-700 flex items-center justify-center gap-2 shadow-sm transition";
+                upBtn.className = "order-btn p-3 rounded-xl font-bold border-2 border-slate-200 bg-white text-slate-500 flex items-center justify-center gap-2 shadow-sm transition";
+            }
+        }
+
+        // Setup Speech Recognition
+        function setupSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'ja-JP';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    
+                    document.getElementById('recognized-speech').innerText = transcript;
+                    checkMatch(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.warn("Speech recognition error", event.error);
+                };
+
+                recognition.onend = () => {
+                    if (isListening) {
+                        try {
+                            recognition.start();
+                        } catch(e) {
+                            // Ignore if already started
+                        }
+                    }
+                };
+            } else {
+                document.getElementById('mic-status-text').innerText = "※お使いのブラウザは音声認識未対応です（手動ボタン使えます）";
+                document.getElementById('mic-icon').className = "w-3 h-3 rounded-full bg-amber-500";
+            }
+        }
+
+        function startChallenge() {
+            currentSequence = getDanItems(selectedDan, selectedOrder);
+            currentStepIndex = 0;
+
+            document.getElementById('screen-select').classList.add('hidden');
+            document.getElementById('screen-challenge').classList.remove('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+
+            const orderName = selectedOrder === 'up' ? '上がり' : '下がり';
+            document.getElementById('active-title').innerText = `レベル${selectedLevel} / ${selectedDan}の段 (${orderName})`;
+
+            updateStepView();
+
+            startTime = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                document.getElementById('timer-display').innerText = elapsed;
+            }, 100);
+
+            if (recognition) {
+                isListening = true;
+                try {
+                    recognition.start();
+                } catch(e) {
+                    // Ignore if already started
+                }
+            }
+        }
+
+        function updateStepView() {
+            if (currentStepIndex >= currentSequence.length) {
+                finishChallenge();
+                return;
+            }
+            const currentItem = currentSequence[currentStepIndex];
+            
+            const readingElem = document.getElementById('current-reading');
+            const exprElem = document.getElementById('current-expression');
+            const promptSub = document.getElementById('prompt-sub-text');
+
+            if (selectedLevel === 1) {
+                readingElem.style.display = 'block';
+                readingElem.innerText = currentItem.exp; // 読み方 (にいちが２など)
+                exprElem.innerText = currentItem.expDisplay; // 式と答え (2×1＝2)
+                promptSub.innerText = "こえに出してとなえてね！";
+            } else if (selectedLevel === 2) {
+                readingElem.style.display = 'none';
+                exprElem.innerText = currentItem.eqDisplay; // 式と答え (2×1＝2)
+                promptSub.innerText = "こえに出してすらすら言えるかな？";
+            } else {
+                readingElem.style.display = 'none';
+                exprElem.innerText = currentItem.eqQuestion; // 式と？ (2×1＝？)
+                promptSub.innerText = "こたえを声に出してね！";
+            }
+
+            document.getElementById('recognized-speech').innerText = "（声をきいています...）";
+
+            if (recognition && isListening) {
+                try {
+                    recognition.stop();
+                } catch(e){}
+                setTimeout(() => {
+                    if (isListening) {
+                        try {
+                            recognition.start();
+                        } catch(e) {
+                            // Ignore if already started
+                        }
+                    }
+                }, 150);
+            }
+
+            const progressPercent = ((currentStepIndex + 1) / 9) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('progress-count').innerText = `${currentStepIndex + 1} / 9`;
+        }
+
+        function checkMatch(transcript) {
+            if (currentStepIndex >= currentSequence.length) return;
+            const currentItem = currentSequence[currentStepIndex];
+            
+            const cleanedTranscript = transcript.replace(/[\s　]+/g, '').toLowerCase();
+            
+            let matched = false;
+            for (let kw of currentItem.keywords) {
+                if (cleanedTranscript.includes(kw)) {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (matched) {
+                const exprBox = document.getElementById('current-expression');
+                exprBox.classList.add('text-emerald-600', 'scale-110');
+                setTimeout(() => {
+                    exprBox.classList.remove('text-emerald-600', 'scale-110');
+                }, 300);
+
+                currentStepIndex++;
+                setTimeout(() => {
+                    updateStepView();
+                }, 300);
+            }
+        }
+
+        function checkSpeechManually() {
+            currentStepIndex++;
+            updateStepView();
+        }
+
+        function skipCurrentStep() {
+            currentStepIndex++;
+            updateStepView();
+        }
+
+        function speakCurrentExpression() {
+            if ('speechSynthesis' in window) {
+                const currentItem = currentSequence[currentStepIndex];
+                const utter = new SpeechSynthesisUtterance(currentItem.exp);
+                utter.lang = 'ja-JP';
+                utter.rate = 0.9;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        function finishChallenge() {
+            isListening = false;
+            if (recognition) {
+                try { recognition.stop(); } catch(e){}
+            }
+            if (timerInterval) clearInterval(timerInterval);
+
+            const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+
+            document.getElementById('screen-challenge').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('result-time').innerText = `${totalTime}秒`;
+            const orderStr = selectedOrder === 'up' ? '上がり九九' : '下がり九九';
+            document.getElementById('result-dan-name').innerText = `レベル${selectedLevel} / ${selectedDan}の段 （${orderStr}） クリア！`;
+
+            let rank = "★ 九九マスター ★";
+            let comment = "";
+            let timeVal = parseFloat(totalTime);
+
+            if (timeVal < 12.0) {
+                rank = "👑 九九のたつじん！";
+                comment = `すごすぎる！${totalTime}秒なんて、まるで新幹線のような速さですね！レベル${selectedLevel}をクリアなんてすばらしいです！`;
+            } else if (timeVal < 20.0) {
+                rank = "🌟 九九めいじん！";
+                comment = `お見事です！リズムよく正確に唱えることができました。毎日の練習の成果がバッチリ出ていますね！`;
+            } else {
+                rank = "👍 がんばり屋さんの星";
+                comment = `最後まであきらめずにしっかりと言えました！レベル${selectedLevel}の調子で、何度も練習してマスターしようね！`;
+            }
+
+            try {
+                KukuRecords.showReward(KukuRecords.add({
+                    app: 'kiite', dan: String(selectedDan), level: selectedLevel,
+                    order: selectedOrder, value: parseFloat(totalTime)
+                }));
+            } catch (e) { console.warn(e); }
+
+            document.getElementById('result-rank').innerText = rank;
+            document.getElementById('teacher-comment').innerText = comment;
+        }
+
+        function restartChallenge() {
+            startChallenge();
+        }
+
+        function backToSelect() {
+            isListening = false;
+            if (recognition) {
+                try { recognition.stop(); } catch(e){}
+            }
+            if (timerInterval) clearInterval(timerInterval);
+
+            document.getElementById('screen-challenge').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-select').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
