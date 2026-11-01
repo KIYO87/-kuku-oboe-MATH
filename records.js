@@ -21,8 +21,15 @@
     { min: 35,  name: 'はやぶさ',     icon: '🦅' },
     { min: 55,  name: '九九きし',     icon: '🛡️' },
     { min: 80,  name: '九九はかせ',   icon: '🎓' },
-    { min: 120, name: '九九マスター', icon: '👑' }
+    { min: 100, name: '九九スター',   icon: '🌟' },
+    { min: 120, name: '九九マスター', icon: '👑' },
+    { min: 150, name: '九九ダイヤ',   icon: '💎' },
+    { min: 200, name: '九九でんせつ', icon: '🐲' }
   ];
+  // 200まいのあとは、100まいごとにランクアップ（300, 400, ... 10000まいまで）
+  for (var m = 300, lv = 2; m <= 10000; m += 100, lv++) {
+    RANKS.push({ min: m, name: '九九でんせつ Lv.' + lv, icon: '🐲' });
+  }
 
   function load() {
     try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
