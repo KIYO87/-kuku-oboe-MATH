@@ -217,6 +217,7 @@
       });
 
       startBtn.addEventListener("click", startCountdown);
+      KukuRecords.guard("kotae");
       backBtn.addEventListener("click", returnToConfig);
 
       function recreateBoardSection() {
@@ -306,6 +307,7 @@
       }
 
       function startCountdown() {
+        if (KukuRecords.guard("kotae")) return;
         if (isPlaying) {
           clearInterval(timer);
         }
