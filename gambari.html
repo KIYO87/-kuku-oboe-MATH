@@ -49,6 +49,23 @@
       <p class="text-[11px] text-slate-400 mt-3">チャレンジを おわらせるたびに、その段の シールが 1まい もらえるよ！</p>
     </section>
 
+    <!-- 使用せいげん・パスワード -->
+    <section id="lock-section" class="bg-white rounded-3xl p-5 shadow-lg border-2 border-rose-100">
+      <h2 class="text-lg font-black text-rose-600 mb-2">🔒 つかいかたの せいげん</h2>
+      <div id="lock-status" class="text-sm font-bold text-slate-600 mb-3"></div>
+      <div id="pw-area">
+        <label class="block text-xs font-bold text-slate-500 mb-1">パスワードを いれると、せいげんが なくなります</label>
+        <div class="flex gap-2">
+          <input id="pw-input" type="password" autocomplete="off" placeholder="パスワード" class="flex-1 min-w-0 border-2 border-slate-200 rounded-xl px-3 py-2 text-base font-bold focus:outline-none focus:border-rose-400">
+          <button id="pw-btn" type="button" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black text-sm">かいじょ</button>
+        </div>
+        <div id="pw-msg" class="text-xs font-bold mt-2 min-h-[1rem]"></div>
+      </div>
+      <div id="relock-area" class="hidden">
+        <button id="relock-btn" type="button" class="text-xs font-bold text-slate-400 underline">せいげんを また かける</button>
+      </div>
+    </section>
+
     <!-- きろく -->
     <section class="bg-white rounded-3xl p-5 shadow-lg border-2 border-indigo-100">
       <h2 class="text-lg font-black text-indigo-600 mb-3">📊 きろく（トップ10）</h2>
@@ -168,7 +185,33 @@
         R.clear(); renderAll();
       }
     };
-    function renderAll() { renderRank(); renderAlbum(); renderTabs(); renderTable(); }
+
+    function renderLock() {
+      var n = R.LOCK_DIFF, a = R.countOf('kotae'), b = R.countOf('kiite');
+      var un = R.isUnlocked(), lk = R.lockedApp(), st = document.getElementById('lock-status');
+      document.getElementById('pw-area').classList.toggle('hidden', un);
+      document.getElementById('relock-area').classList.toggle('hidden', !un);
+      if (un) {
+        st.innerHTML = '✅ せいげんは <b>なし</b> になっています。';
+      } else if (lk) {
+        st.innerHTML = '⚠️ いま <b>' + R.APP_NAME[lk] + '</b> は おやすみ中です。<br><span class="text-xs font-bold text-slate-500">（シールの さが ' + n + 'まい いじょう：九九答え ' + a + 'まい／聞いてもらい ' + b + 'まい）</span>';
+      } else {
+        st.innerHTML = '2つの アプリの シールの さが <b>' + n + 'まい いじょう</b> になると、多いほうの アプリは おやすみに なります。<br><span class="text-xs font-bold text-slate-500">いまの さ：' + Math.abs(a - b) + 'まい（九九答え ' + a + '／聞いてもらい ' + b + '）</span>';
+      }
+    }
+    function doUnlock() {
+      var inp = document.getElementById('pw-input'), msg = document.getElementById('pw-msg');
+      if (R.tryUnlock(inp.value)) {
+        inp.value = ''; msg.textContent = ''; renderLock();
+      } else {
+        msg.className = 'text-xs font-bold mt-2 min-h-[1rem] text-rose-500';
+        msg.textContent = 'パスワードが ちがうよ。';
+      }
+    }
+    document.getElementById('pw-btn').onclick = doUnlock;
+    document.getElementById('pw-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') doUnlock(); });
+    document.getElementById('relock-btn').onclick = function () { R.setUnlocked(false); renderLock(); };
+    function renderAll() { renderRank(); renderAlbum(); renderLock(); renderTabs(); renderTable(); }
     renderAll();
   </script>
 </body>
