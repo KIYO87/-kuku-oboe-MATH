@@ -362,6 +362,7 @@
                 container.appendChild(btn);
             }
             setupSpeechRecognition();
+            KukuRecords.guard('kiite');
         });
 
         function setLevel(lvl) {
@@ -439,6 +440,7 @@
         }
 
         function startChallenge() {
+            if (KukuRecords.guard('kiite')) return;
             currentSequence = getDanItems(selectedDan, selectedOrder);
             currentStepIndex = 0;
 
