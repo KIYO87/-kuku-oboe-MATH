@@ -20,22 +20,22 @@
       <p class="text-sm font-bold text-slate-500 mt-2">たのしく 九九を マスターしよう！</p>
     </header>
 
-    <a href="kuku-kotae.html" class="menu-btn block bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl p-5 shadow-lg">
+    <a id="btn-kotae" href="kuku-kotae.html" class="menu-btn block bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl p-5 shadow-lg">
       <div class="flex items-center gap-4">
         <div class="text-4xl">✏️</div>
         <div>
           <div class="text-2xl font-black">九九答えMATH</div>
-          <div class="text-xs font-bold text-indigo-100 mt-0.5">60びょうで いくつ とけるかな？</div>
+          <div id="sub-kotae" class="text-xs font-bold text-indigo-100 mt-0.5">60びょうで いくつ とけるかな？</div>
         </div>
       </div>
     </a>
 
-    <a href="kuku-kiite.html" class="menu-btn block bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl p-5 shadow-lg">
+    <a id="btn-kiite" href="kuku-kiite.html" class="menu-btn block bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl p-5 shadow-lg">
       <div class="flex items-center gap-4">
         <div class="text-4xl">🎤</div>
         <div>
           <div class="text-2xl font-black">九九聞いてもらいMATH</div>
-          <div class="text-xs font-bold text-emerald-100 mt-0.5">こえに出して すらすら となえよう</div>
+          <div id="sub-kiite" class="text-xs font-bold text-emerald-100 mt-0.5">こえに出して すらすら となえよう</div>
         </div>
       </div>
     </a>
@@ -50,8 +50,55 @@
       </div>
     </a>
 
+    <button id="about-btn" type="button" class="menu-btn block w-full bg-white hover:bg-slate-50 text-slate-600 rounded-3xl p-4 shadow border-2 border-slate-200">
+      <span class="text-lg font-black">ℹ️ このアプリについて</span>
+    </button>
+
     <p class="text-center text-xs text-slate-400">© 2026 小学校算数サポートアプリ</p>
   </main>
+
+
+  <!-- このアプリについて -->
+  <div id="about-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
+      <h2 class="text-2xl font-black text-emerald-600 text-center mb-4">ℹ️ このアプリについて</h2>
+
+      <p class="text-sm font-bold text-slate-600 leading-relaxed mb-4">
+        「九九おぼえMATH」は、小学生が九九を たのしく おぼえるための アプリです。
+      </p>
+
+      <div class="space-y-3 mb-4">
+        <div class="bg-indigo-50 rounded-2xl p-3">
+          <div class="font-black text-indigo-700 text-sm">✏️ 九九答えMATH</div>
+          <div class="text-xs text-slate-600 leading-relaxed mt-1">60びょうの あいだに、九九の こたえを どれだけ えらべるか ちょうせんします。レベル1（ドットを かぞえる）、レベル2（4つから えらぶ）、レベル3（すうじを いれる）があります。</div>
+        </div>
+        <div class="bg-emerald-50 rounded-2xl p-3">
+          <div class="font-black text-emerald-700 text-sm">🎤 九九聞いてもらいMATH</div>
+          <div class="text-xs text-slate-600 leading-relaxed mt-1">九九を こえに出して となえます。マイクで ききとって、すらすら いえた じかんを はかります。（マイクを つかえない ときは、手動ボタンも つかえます）</div>
+        </div>
+        <div class="bg-amber-50 rounded-2xl p-3">
+          <div class="font-black text-amber-700 text-sm">🏆 きみのがんばり</div>
+          <div class="text-xs text-slate-600 leading-relaxed mt-1">ちょうせんした 日・時刻・きろく（トップ10）が 段ごとに みられます。チャレンジを おわらせるたびに シールが 1まい もらえて、シールが ふえると ランクが あがります。</div>
+        </div>
+      </div>
+
+      <div class="bg-rose-50 border-2 border-rose-100 rounded-2xl p-3 mb-4">
+        <div class="font-black text-rose-700 text-sm">🔒 シールの さが 7まい いじょうのとき</div>
+        <div class="text-xs text-slate-600 leading-relaxed mt-1">どちらかばかり あそばないように、2つの アプリの シールの数に 7まい いじょうの さが でたら、シールが 多いほうの アプリは おやすみに なります。すくない ほうの アプリで シールを ふやそう！ 先生から パスワードを おしえてもらい、「きみのがんばり」で いれると、この せいげんは なくなります。</div>
+      </div>
+
+      <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 mb-5">
+        <div class="font-black text-slate-700 text-sm">📝 ごりようにあたって</div>
+        <ul class="text-xs text-slate-600 leading-relaxed mt-1 list-disc pl-4 space-y-1">
+          <li>教育を もくてきとした ばあいは、自由に つかって かまいません。</li>
+          <li>予告なく、しようの へんこうや ないようの こうしん、ていしなどを おこなうことが あります。あらかじめ ごりょうしょう いただいた うえで、ごりようください。</li>
+          <li>きろくや シールは、つかっている たんまつ・ブラウザの なかに ほぞんされます。ブラウザの データを けしたり、べつの たんまつを つかうと、きえることが あります。</li>
+        </ul>
+      </div>
+
+      <button id="about-close" type="button" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg">とじる</button>
+    </div>
+  </div>
 
   <script src="records.js"></script>
   <script>
@@ -61,6 +108,23 @@
         var r = KukuRecords.RANKS[KukuRecords.rankIndex(n)];
         document.getElementById('rank-line').textContent = r.icon + ' ' + r.name + '　シール ' + n + 'まい';
       } catch (e) {}
+
+      // せいげん中のアプリに 🔒 をつける
+      try {
+        var lk = KukuRecords.lockedApp();
+        if (lk) {
+          var b = document.getElementById('btn-' + lk);
+          b.classList.add('opacity-60');
+          document.getElementById('sub-' + lk).textContent = '🔒 いまは おやすみ（シールを ふやそう）';
+        }
+      } catch (e) {}
+
+      var modal = document.getElementById('about-modal');
+      function openAbout() { modal.classList.remove('hidden'); }
+      function closeAbout() { modal.classList.add('hidden'); }
+      document.getElementById('about-btn').onclick = openAbout;
+      document.getElementById('about-close').onclick = closeAbout;
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeAbout(); });
     })();
   </script>
 </body>
