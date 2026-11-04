@@ -31,10 +31,21 @@
       <div id="rank-next" class="text-xs text-slate-400 font-bold mt-2"></div>
     </section>
 
-    <!-- シール帳 -->
+    <!-- シール帳（アプリごと） -->
+    <section class="bg-white rounded-3xl p-5 shadow-lg border-2 border-indigo-100">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-black text-indigo-600">📒 シールちょう　九九答え</h2>
+        <span id="album-count-kotae" class="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full"></span>
+      </div>
+      <div id="album-kotae" class="grid grid-cols-4 sm:grid-cols-5 gap-2"></div>
+    </section>
+
     <section class="bg-white rounded-3xl p-5 shadow-lg border-2 border-emerald-100">
-      <h2 class="text-lg font-black text-emerald-600 mb-3">📒 シールちょう</h2>
-      <div id="album" class="grid grid-cols-4 sm:grid-cols-5 gap-2"></div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-black text-emerald-600">📒 シールちょう　九九聞いてもらい</h2>
+        <span id="album-count-kiite" class="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full"></span>
+      </div>
+      <div id="album-kiite" class="grid grid-cols-4 sm:grid-cols-5 gap-2"></div>
       <p class="text-[11px] text-slate-400 mt-3">チャレンジを おわらせるたびに、その段の シールが 1まい もらえるよ！</p>
     </section>
 
@@ -70,7 +81,8 @@
       var r = R.RANKS[idx], next = R.RANKS[idx + 1];
       document.getElementById('rank-icon').textContent = r.icon;
       document.getElementById('rank-name').textContent = r.name;
-      document.getElementById('rank-sub').textContent = 'シール ' + n + 'まい';
+      var nk = all.filter(function (r) { return r.app === 'kotae'; }).length;
+      document.getElementById('rank-sub').textContent = 'シール ' + n + 'まい（九九答え ' + nk + ' ＋ 聞いてもらい ' + (n - nk) + '）';
       if (next) {
         var pct = Math.round(((n - r.min) / (next.min - r.min)) * 100);
         document.getElementById('rank-bar').style.width = pct + '%';
@@ -82,18 +94,25 @@
     }
 
     function renderAlbum() {
-      var counts = {};
-      R.load().forEach(function (r) { counts[r.dan] = (counts[r.dan] || 0) + 1; });
-      var html = '';
-      R.DAN_ORDER.forEach(function (d) {
-        var c = counts[d] || 0;
-        html += '<div class="rounded-2xl border-2 ' + (c ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-slate-50') + ' p-2 text-center relative">' +
-          '<div class="text-3xl" style="' + (c ? '' : 'filter:grayscale(1);opacity:.35') + '">' + R.STICKERS[d] + '</div>' +
-          '<div class="text-[10px] font-bold text-slate-500 mt-0.5">' + R.DAN_LABEL[d] + '</div>' +
-          (c ? '<div class="absolute -top-1.5 -right-1.5 bg-amber-400 text-white text-[10px] font-black rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow">' + c + '</div>' : '') +
-          '</div>';
+      var all = R.load();
+      ['kotae', 'kiite'].forEach(function (app) {
+        var counts = {}, total = 0;
+        all.forEach(function (r) {
+          if (r.app !== app) return;
+          counts[r.dan] = (counts[r.dan] || 0) + 1; total++;
+        });
+        var html = '';
+        R.DAN_ORDER.forEach(function (d) {
+          var c = counts[d] || 0;
+          html += '<div class="rounded-2xl border-2 ' + (c ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-slate-50') + ' p-2 text-center relative">' +
+            '<div class="text-3xl" style="' + (c ? '' : 'filter:grayscale(1);opacity:.35') + '">' + R.STICKERS[d] + '</div>' +
+            '<div class="text-[10px] font-bold text-slate-500 mt-0.5">' + R.DAN_LABEL[d] + '</div>' +
+            (c ? '<div class="absolute -top-1.5 -right-1.5 bg-amber-400 text-white text-[10px] font-black rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center shadow">' + c + '</div>' : '') +
+            '</div>';
+        });
+        document.getElementById('album-' + app).innerHTML = html;
+        document.getElementById('album-count-' + app).textContent = 'ぜんぶで ' + total + 'まい';
       });
-      document.getElementById('album').innerHTML = html;
     }
 
     function renderTabs() {
