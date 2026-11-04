@@ -1,6 +1,11 @@
 /* 九九おぼえMATH 共通：きろく・シール・ランク（localStorage に保存） */
 (function () {
   var KEY = 'kukuOboeRecords_v1';
+  var UNLOCK_KEY = 'kukuOboeUnlocked_v1';
+  var LOCK_DIFF = 7;                 // シールのさが この まい数いじょうで、多いほうを ロック
+  var PASSWORD = '九九おぼえたよ';   // ロックを かいじょするパスワード
+  var APP_NAME = { kotae: '九九答えMATH', kiite: '九九聞いてもらいMATH' };
+  var APP_FILE = { kotae: 'kuku-kotae.html', kiite: 'kuku-kiite.html' };
 
   var STICKERS = {
     '1': '🍎', '2': '🐰', '3': '🐱', '4': '🐶', '5': '🐼', '6': '🦊', '7': '🦁', '8': '🐙', '9': '🐉',
@@ -66,6 +71,50 @@
       }).slice(0, 10);
   }
 
+  // ---- 使用せいげん（シールの数のさ） ----
+  function countOf(app) {
+    return load().filter(function (r) { return r.app === app; }).length;
+  }
+  function isUnlocked() {
+    try { return localStorage.getItem(UNLOCK_KEY) === '1'; } catch (e) { return false; }
+  }
+  function setUnlocked(on) {
+    try { if (on) localStorage.setItem(UNLOCK_KEY, '1'); else localStorage.removeItem(UNLOCK_KEY); } catch (e) {}
+  }
+  function tryUnlock(pw) {
+    if (String(pw).trim() === PASSWORD) { setUnlocked(true); return true; }
+    return false;
+  }
+  // ロックされているアプリ名（'kotae' / 'kiite'）か、なければ null
+  function lockedApp() {
+    if (isUnlocked()) return null;
+    var a = countOf('kotae'), b = countOf('kiite');
+    if (a - b >= LOCK_DIFF) return 'kotae';
+    if (b - a >= LOCK_DIFF) return 'kiite';
+    return null;
+  }
+  // そのアプリがロック中ならメッセージ画面を出して true を返す
+  function guard(app) {
+    if (lockedApp() !== app) return false;
+    if (document.getElementById('kuku-lock')) return true;
+    var other = app === 'kotae' ? 'kiite' : 'kotae';
+    var el = document.createElement('div');
+    el.id = 'kuku-lock';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.8);display:flex;align-items:center;justify-content:center;z-index:10000;padding:16px;font-family:"M PLUS Rounded 1c",sans-serif;';
+    el.innerHTML =
+      '<div style="background:#fff;border-radius:24px;padding:24px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);">' +
+      '<div style="font-size:64px;line-height:1.2;">🔒</div>' +
+      '<div style="font-weight:900;color:#be123c;font-size:18px;margin:6px 0;">いまは ' + APP_NAME[app] + ' は おやすみ</div>' +
+      '<div style="font-weight:700;color:#475569;font-size:14px;line-height:1.7;">' + APP_NAME[app] + 'の シールが ' + APP_NAME[other] + 'より ' + LOCK_DIFF + 'まい いじょう 多いよ。<br>' +
+      APP_NAME[other] + 'にも ちょうせんして、シールを ふやそう！</div>' +
+      '<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">' +
+      '<a href="' + APP_FILE[other] + '" style="padding:12px;border-radius:12px;background:#10b981;color:#fff;font-weight:900;text-decoration:none;">' + APP_NAME[other] + 'へ いく</a>' +
+      '<a href="index.html" style="padding:12px;border-radius:12px;background:#f1f5f9;color:#475569;font-weight:900;text-decoration:none;">トップへ もどる</a>' +
+      '</div></div>';
+    document.body.appendChild(el);
+    return true;
+  }
+
   // rec: {app, dan, level, order?, value}
   function add(rec) {
     var all = load();
@@ -89,6 +138,7 @@
     if (old) old.remove();
     var msgs = [];
     if (res.rankUp) msgs.push('🎉 ランクアップ！ ' + res.rank.icon + ' ' + res.rank.name);
+    if (lockedApp() === res.rec.app) msgs.push('🔒 つぎは ' + APP_NAME[res.rec.app === 'kotae' ? 'kiite' : 'kotae'] + 'で シールを ふやそう！');
     if (res.isBest) msgs.push('✨ じぶんのベストこうしん！');
     else if (res.isFirst) msgs.push('🌱 この段のさいしょの きろく！');
     var el = document.createElement('div');
@@ -112,6 +162,9 @@
   window.KukuRecords = {
     STICKERS: STICKERS, DAN_LABEL: DAN_LABEL, DAN_ORDER: DAN_ORDER, RANKS: RANKS,
     load: load, clear: clear, add: add, top: top, rankIndex: rankIndex,
-    fmtValue: fmtValue, fmtDate: fmtDate, fmtTime: fmtTime, showReward: showReward
+    fmtValue: fmtValue, fmtDate: fmtDate, fmtTime: fmtTime, showReward: showReward,
+    LOCK_DIFF: LOCK_DIFF, APP_NAME: APP_NAME, countOf: countOf,
+    isUnlocked: isUnlocked, setUnlocked: setUnlocked, tryUnlock: tryUnlock,
+    lockedApp: lockedApp, guard: guard
   };
 })();
